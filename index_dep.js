@@ -82,7 +82,7 @@ const getR =async (page,nb)=> {
 
 const getDatas = async (page)  => {
   //rea
-  const selectA=":nth-child(2) > :nth-child(3) > :nth-child(2) > :nth-child(3) > :nth-child(6) > :nth-child(1) > :nth-child(2) > :nth-child(22) > :nth-child(3)"
+  const selectA=":nth-child(2) > :nth-child(3) > :nth-child(2) > :nth-child(3) > :nth-child(6) > :nth-child(1) > :nth-child(2) > :nth-child(8) > :nth-child(3)"
   await page.waitForSelector(selectA,{timeout: 2000 });
 
   //usic
@@ -136,6 +136,7 @@ const getDatas = async (page)  => {
   await page.waitForSelector('.panel > #collapseBordereauFS #bordereauSelected',{timeout: 2000 })
   await page.click('.panel > #collapseBordereauFS #bordereauSelected')
   
+  await wait(1000);
   await page.select('.panel > #collapseBordereauFS #bordereauSelected', '392')
   
   await wait(1000);
