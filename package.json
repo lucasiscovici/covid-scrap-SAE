@@ -1,0 +1,19 @@
+{
+  "name": "scape",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "reg": "node index.js",
+    "dep": "node index_dep.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "jsdom": "^16.2.1",
+    "progress": "^2.0.3",
+    "puppeteer": "^2.1.1"
+  }
+}
