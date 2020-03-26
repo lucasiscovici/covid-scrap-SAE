@@ -31,6 +31,10 @@ var ProgressBar = require('progress');
 });
   return fd;
 }
+function getTodaysTotalSeconds(){
+    let date = new Date();        
+    return +(date.getHours() * 60 * 60) + (date.getMinutes() * 60) + date.getSeconds();
+}
  const newJquery = $$;
 const fs = require("fs");
 const  wait  =(ms) => {
@@ -47,11 +51,11 @@ function convertJSONtocsv(json,filename) {
 
     const replacer = (key, value) => value === null ? '' : value // specify how you want to handle null values here
     const header = Object.keys(json[0])
-    let csv = json.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
-    csv.unshift(header.join(','))
-    csv = csv.join('\r\n')
+    let csv = json.map(row => header.map(fieldName => row[fieldName]).join(','))
+    csv.unshift("reg_id,reg,rea,si_usic,si_unv,si_autres,sc")
+    csv = csv.join('\r\n')+"\n";
 
-    fs.writeFileSync("dist/"+filename+'.csv', csv)
+    fs.writeFileSync("dist/"+filename, csv)
 }
 const puppeteer = require('puppeteer');
 
@@ -106,10 +110,11 @@ const getDatas = async (page)  => {
 }
 
 (async () => {
+   var deb=getTodaysTotalSeconds();
+  console.log("Début du scap pour les régions...");
   const browser = await puppeteer.launch({ headless: true})
   const page = await browser.newPage()
-   
-  console.log("Début du scap pour les régions...");
+  
   await page.goto('https://www.sae-diffusion.sante.gouv.fr/sae-diffusion/recherche.htm')
   
   await page.setViewport({ width: 1680, height: 916 })
@@ -139,18 +144,19 @@ const getDatas = async (page)  => {
   await page.waitForSelector('#aside > #rechercheForm #rechercheButton',{timeout: 2000 })
   await page.click('#aside > #rechercheForm #rechercheButton')
 
-  var bar = new ProgressBar('[:bar] :percent :etas (:n)', { total: 18 });
+  var bar = new ProgressBar('[:bar] :percent :sec s (fin estimée :etas) (:n)', { total: 18 });
   const a = [];
   const first=await getDatas(page);
-  bar.tick({"n":first[1]});
+  bar.tick({"n":first[1],"sec":getTodaysTotalSeconds()-deb});
   a.push(first);
+
   await page.waitForSelector('#accordion > .panel > #implantationAccordeon > .panel-title > a',{timeout: 2000 })
   await page.click('#accordion > .panel > #implantationAccordeon > .panel-title > a')
   
   for (var i = 1; i < 18; i++) {
       
       const c=await getR(page,i+3);
-      bar.tick({"n":c[1]});
+      bar.tick({"n":c[1],"sec":getTodaysTotalSeconds()-deb});
        a.push(c)
        await wait(200);
        // console.log(c);
@@ -160,5 +166,6 @@ const getDatas = async (page)  => {
 
   const jsonR=a;
   convertJSONtocsv(jsonR,"regions.csv")
+  console.log("dist/regions.csv");
 
 })()
